@@ -4,8 +4,8 @@ import Upload from "./pages/Upload";
 function App() {
   return (
     <div>
-      {/* <Upload /> */}
-      <Quiz />
+      <Upload />
+      {/* <Quiz /> */}
     </div>
   )
 }

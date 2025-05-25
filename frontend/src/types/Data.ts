@@ -1,6 +1,6 @@
 export interface Data {
     content: string,
     count: number,
-    level: string,
-    type: string,
+    level: "easy" | "medium" | "hard",
+    type: "factual" | "conceptual",
 }
