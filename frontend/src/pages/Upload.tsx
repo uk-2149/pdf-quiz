@@ -19,30 +19,37 @@ function Upload() {
   const [questions, setQuestions] = useState<Question[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [dots, setDots] = useState(".");
+  const [isUploading, setIsUploading] = useState(false);
 
   const backendUrl = import.meta.env.VITE_BACKEND_URL;
 
   useEffect(() => {
     if (!isLoading) return;
-  
+
     const interval = setInterval(() => {
       setDots((prev) => (prev.length === 3 ? "." : prev + "."));
     }, 500);
-  
+
     return () => clearInterval(interval);
   }, [isLoading]);
-  
 
   const handleUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
 
+    setIsUploading(true);
     setFileName(file.name);
     const formFile = new FormData();
     formFile.append("file", file);
 
-    const res = await axios.post(`${backendUrl}/api/upload`, formFile);
-    setText(res.data.text);
+    try {
+      const res = await axios.post(`${backendUrl}/api/upload`, formFile);
+      setText(res.data.text);
+    } catch (err) {
+      setError("File upload failed. Please try again.");
+    } finally {
+      setIsUploading(false);
+    }
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -186,15 +193,22 @@ function Upload() {
 
                 {/* Submit */}
                 <div className="pt-4">
-  <button
-    type="submit"
-    className="w-full bg-violet-500 text-white py-2 px-4 rounded-lg hover:bg-violet-600 transition duration-200 font-semibold text-lg shadow-md flex justify-center items-center"
-    disabled={isLoading}
-  >
-    {isLoading ? `Generating${dots}` : "🚀 Generate Quiz"}
-  </button>
-</div>
-
+                  <button
+                    type="submit"
+                    disabled={isUploading || isLoading || !text}
+                    className={`w-full py-2 px-4 rounded-lg font-semibold text-lg shadow-md flex justify-center items-center transition duration-200 ${
+                      isUploading || isLoading || !text
+                        ? "bg-violet-400 text-white cursor-not-allowed"
+                        : "bg-violet-500 text-white hover:bg-violet-600"
+                    }`}
+                  >
+                    {isUploading
+                      ? "📤 Uploading File..."
+                      : isLoading
+                      ? `Generating${dots}`
+                      : "🚀 Generate Quiz"}
+                  </button>
+                </div>
               </form>
             </div>
           </div>
