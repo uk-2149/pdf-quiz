@@ -4,7 +4,10 @@ import uploadFile from "./routes/uploadFile";
 
 const app = express();
 
-app.use(cors());
+app.use(cors({
+  origin: "https://quizgen-xi.vercel.app/",
+  credentials: true,
+}));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 

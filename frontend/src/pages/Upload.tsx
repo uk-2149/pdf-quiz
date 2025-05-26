@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import axios from "axios";
 import type { Data } from "../types/Data";
 import type { Question } from "../types/Question";
@@ -17,8 +17,21 @@ function Upload() {
     type: "conceptual",
   });
   const [questions, setQuestions] = useState<Question[]>([]);
+  const [isLoading, setIsLoading] = useState(false);
+  const [dots, setDots] = useState(".");
 
   const backendUrl = import.meta.env.VITE_BACKEND_URL;
+
+  useEffect(() => {
+    if (!isLoading) return;
+  
+    const interval = setInterval(() => {
+      setDots((prev) => (prev.length === 3 ? "." : prev + "."));
+    }, 500);
+  
+    return () => clearInterval(interval);
+  }, [isLoading]);
+  
 
   const handleUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -34,6 +47,7 @@ function Upload() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    setIsLoading(true);
     try {
       if (!text || formData.count < 1) throw Error;
       const updatedFormData = { ...formData, content: text };
@@ -49,6 +63,8 @@ function Upload() {
       } else {
         setError("Please fill the valid fields");
       }
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -170,13 +186,15 @@ function Upload() {
 
                 {/* Submit */}
                 <div className="pt-4">
-                  <button
-                    type="submit"
-                    className="w-full bg-violet-500 text-white py-2 px-4 rounded-lg hover:bg-violet-600 transition duration-200 font-semibold text-lg shadow-md"
-                  >
-                    🚀 Generate Quiz
-                  </button>
-                </div>
+  <button
+    type="submit"
+    className="w-full bg-violet-500 text-white py-2 px-4 rounded-lg hover:bg-violet-600 transition duration-200 font-semibold text-lg shadow-md flex justify-center items-center"
+    disabled={isLoading}
+  >
+    {isLoading ? `Generating${dots}` : "🚀 Generate Quiz"}
+  </button>
+</div>
+
               </form>
             </div>
           </div>
