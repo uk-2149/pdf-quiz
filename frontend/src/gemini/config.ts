@@ -22,7 +22,7 @@ Return a JSON array where each object has:
 
 
 
-Strictly return only the JSON array.
+Strictly return only the JSON array with properly quoted strings and no comments.
   `,
   });
 

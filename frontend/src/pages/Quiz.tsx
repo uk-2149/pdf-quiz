@@ -1,5 +1,6 @@
 import { useState } from "react";
 import type { Question } from "../types/Question";
+import jsPDF from "jspdf";
 
 type QuizProps = {
   questions: Question[];
@@ -25,8 +26,78 @@ function Quiz({ questions }: QuizProps) {
     setSubmitted(true);
   };
 
+  const handleDownload = () => {
+    const doc = new jsPDF();
+    doc.setFontSize(14);
+    doc.text("Quiz with Answers", 10, 10);
+  
+    let y = 20;
+  
+    const wrapText = (text: string, maxWidth = 180) => {
+      return doc.splitTextToSize(text, maxWidth);
+    };
+  
+    // Print questions
+    questions.forEach((q, index) => {
+      const questionLines = wrapText(`${index + 1}. ${q.question}`);
+      doc.text(questionLines, 10, y);
+      y += questionLines.length * 7;
+  
+      q.options.forEach((opt) => {
+        const optionLines = wrapText(`- ${opt}`);
+        doc.text(optionLines, 14, y);
+        y += optionLines.length * 6;
+
+        if (y > 270) {
+          doc.addPage();
+          y = 10;
+        }
+      });
+  
+      y += 6;
+  
+      if (y > 270) {
+        doc.addPage();
+        y = 10;
+      }
+    });
+  
+    y += 10;
+  
+    if (y > 260) {
+      doc.addPage();
+      y = 10;
+    }
+  
+    // Print 'Answers'
+    doc.setFontSize(12);
+    doc.text("Answers:", 10, y);
+    y += 8;
+  
+    // Print all answers
+    questions.forEach((q, index) => {
+      const answerLines = wrapText(`${index + 1}. ${q.answer}`);
+      doc.text(answerLines, 10, y);
+      y += answerLines.length * 6;
+  
+      if (y > 270) {
+        doc.addPage();
+        y = 10;
+      }
+    });
+  
+    doc.save("quiz-with-answers.pdf");
+  };
+  
+    
   return (
     <div className="p-6 max-w-xl mx-auto border rounded shadow space-y-4">
+      <button
+    className="bg-green-600 text-white px-4 py-2 rounded"
+    onClick={handleDownload}
+  >
+    Download Quiz PDF
+  </button>
       <h1 className="text-2xl font-bold mb-4">Quiz App</h1>
 
       {questions.map((q, index) => (
