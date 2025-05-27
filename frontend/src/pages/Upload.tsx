@@ -68,7 +68,7 @@ function Upload() {
       } else if (formData.count < 1) {
         setError("Please enter a valid number of questions");
       } else {
-        setError("Please fill the valid fields");
+        setError("Something went wrong. Please try again.");
       }
     } finally {
       setIsLoading(false);
