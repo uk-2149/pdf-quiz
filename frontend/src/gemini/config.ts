@@ -8,22 +8,22 @@ async function getQuestions(data: Data): Promise<Question[]> {
   console.log(data.content);
   const response = await ai.models.generateContent({
     model: "gemini-2.0-flash",
-    contents: `Content:
+    contents: `You are an AI that generates quiz questions based on the given content.
+
+Generate exactly ${data.count} ${data.type.toUpperCase()} questions at ${data.level.toUpperCase()} difficulty level from the following content:
+
 ${data.content}
 
-You are an AI that generates quiz questions based on given content.
-Generate ${
-      data.count
-    } ${data.type.toUpperCase()} questions of ${data.level.toUpperCase()} difficulty from the above content.
+${(data.custom) ? `Additional user instruction: ${data.custom}` : ""}
 
-${(data.custom) ? `User's instruction: ${data.custom}` : ""}
+Return your response as a **valid JSON array** containing exactly ${data.count} objects.
 
-Return a JSON array where each object has:
-- question: string
-- options: string[]
-- answer: string (must match one of the options)
+Each object must have the following keys:
+- "question": string (the quiz question)
+- "options": string[] (exactly 4 distinct options)
+- "answer": string (must match one of the options)
 
-Strictly return only the JSON array with properly quoted strings and no comments.
+Strictly return only the JSON array. Do not include explanations, comments, markdown, or any additional text. Ensure all strings are properly quoted.
   `,
   });
 
