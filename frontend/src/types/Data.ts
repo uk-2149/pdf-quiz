@@ -3,4 +3,5 @@ export interface Data {
     count: number,
     level: "easy" | "medium" | "hard",
     type: "factual" | "conceptual",
+    custom: string
 }

@@ -16,12 +16,12 @@ Generate ${
       data.count
     } ${data.type.toUpperCase()} questions of ${data.level.toUpperCase()} difficulty from the above content.
 
+${(data.custom) ? `User's instruction: ${data.custom}` : ""}
+
 Return a JSON array where each object has:
 - question: string
 - options: string[]
 - answer: string (must match one of the options)
-
-
 
 Strictly return only the JSON array with properly quoted strings and no comments.
   `,

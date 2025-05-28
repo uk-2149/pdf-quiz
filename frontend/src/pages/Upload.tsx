@@ -15,6 +15,7 @@ function Upload() {
     count: 0,
     level: "easy",
     type: "conceptual",
+    custom: ""
   });
   const [questions, setQuestions] = useState<Question[]>([]);
   const [isLoading, setIsLoading] = useState(false);
@@ -24,14 +25,14 @@ function Upload() {
   const backendUrl = import.meta.env.VITE_BACKEND_URL;
 
   useEffect(() => {
-    if (!isLoading) return;
+    if (!isLoading && !isUploading) return;
 
     const interval = setInterval(() => {
       setDots((prev) => (prev.length === 3 ? "." : prev + "."));
     }, 500);
 
     return () => clearInterval(interval);
-  }, [isLoading]);
+  }, [isLoading, isUploading]);
 
   const handleUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -191,6 +192,28 @@ function Upload() {
                   </select>
                 </div>
 
+                <div>
+                  <label
+                    htmlFor="count"
+                    className="block text-sm font-semibold text-gray-700 mb-1"
+                  >
+                    ✍️ Custom Prompt (optional)
+                  </label>
+                  <textarea
+                    id="custom"
+                    value={formData.custom}
+                    onChange={(e) =>
+                      setFormData({
+                        ...formData,
+                        custom: e.target.value,
+                      })
+                    }
+                    rows={3}
+                    placeholder="e.g. Generate more questions from a specific topic or specific type from this file"
+                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400"
+                  />
+                </div>
+
                 {/* Submit */}
                 <div className="pt-4">
                   <button
@@ -203,7 +226,7 @@ function Upload() {
                     }`}
                   >
                     {isUploading
-                      ? "📤 Uploading File..."
+                      ? `📤 Uploading File${dots}`
                       : isLoading
                       ? `Generating${dots}`
                       : "🚀 Generate Quiz"}
